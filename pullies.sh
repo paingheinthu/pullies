@@ -3,10 +3,18 @@
 # Define the color codes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-NC='\033[0m'  # No Color
+NC='\033[0m' # No Color
 
+# Define version
+VERSION="1.0.0"
 
-header="*${GREEN}\t  multiple project stash, checkout and pulling${NC}\t\t\t\t\t*" 
+# Check for arguments
+if [[ "$1" == "--version" ]]; then
+  echo "Pullies version $VERSION"
+  exit 0
+fi
+
+header="*${GREEN}\t  multiple project stash, checkout and pulling${NC}\t\t\t\t\t*"
 body="* ${RED}please make sure your projects must be same source repo name and branch name${NC}\t\t*"
 horizontal_line="*****************************************************************************************"
 vertical_line="*                                                                                       *"
@@ -19,19 +27,19 @@ echo "$horizontal_line"
 
 stash_miko() {
   local projects=("$1")
-  current_dir=$(pwd);
+  current_dir=$(pwd)
 
   for project in "${projects[@]}"; do
     echo -e "satshing ${GREEN}$project${NC} ... "
 
     # go to directory
-    cd "$project";
-    
+    cd "$project"
+
     # stash all of changes
-    git stash;
+    git stash
 
     # go back current dir
-    cd "$current_dir";
+    cd "$current_dir"
   done
 }
 
@@ -39,19 +47,19 @@ change_branch() {
   local projects=("${!1}")
   local branch=("$2")
 
-  current_dir=$(pwd);
+  current_dir=$(pwd)
 
   for project in "${projects[@]}"; do
     echo -e "checkout ${GREEN}$project${NC} ... "
 
     # go to directory
-    cd "$project";
-    
+    cd "$project"
+
     # stash all of changes
-    git checkout $branch;
+    git checkout $branch
 
     # go back current dir
-    cd "$current_dir";
+    cd "$current_dir"
   done
 }
 
@@ -61,29 +69,29 @@ pull_branch() {
   local branch="$3"
   local is_same="$4"
 
-  current_dir=$(pwd);
+  current_dir=$(pwd)
 
   for project in "${projects[@]}"; do
     echo -e "pulling ${GREEN}$project${NC} ... "
 
     # go to directory
-    cd "$project";
-   
-    if [[ "$is_same" == "y" || "$is_same" == "Y" ]];then
-      git pull $source $branch;
+    cd "$project"
+
+    if [[ "$is_same" == "y" || "$is_same" == "Y" ]]; then
+      git pull $source $branch
     else
       read -p "provide the source repo name! (eg., source || origin): " remote
       read -p "provide the source branch name! (eg., dev || master): " branch
 
       if [ -n "$remote" ] && [ -n "$branch" ]; then
-        git pull $remote $branch;
+        git pull $remote $branch
       else
         echo -e "hmm your missing to support source repo or source branch ;( ${RED}YOU NEED RE RUN! SO SAD${NC}"
       fi
     fi
 
     # go back current dir
-    cd "$current_dir";
+    cd "$current_dir"
   done
 }
 
@@ -119,5 +127,3 @@ if [[ "$remote_confirm" == "y" || "$remote_confirm" == "Y" ]]; then
 else
   pull_branch "projects[@]" "$source_repo" "$source_branch" "$remote_confirm"
 fi
-
-
